@@ -1,75 +1,66 @@
-// package com.collins.display;
+package com.collins.display;
 
-// import java.nio.FloatBuffer;
-// import java.nio.IntBuffer;
-// import java.util.ArrayList;
-// import java.util.List;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
-// import com.collins.display.Models.RawModel;
-// import com.jogamp.common.nio.Buffers;
-// import com.jogamp.opengl.GL;
-// import com.jogamp.opengl.GL3;
-// import com.jogamp.opengl.GLAutoDrawable;
-// import com.jogamp.opengl.GLContext;
-// import com.jogamp.opengl.util.GLBuffers;
+import com.collins.display.Models.RawModel;
 
-// public class Loader {
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
-//     private List<IntBuffer> vaos = new ArrayList<IntBuffer>();
-//     private List<IntBuffer> vbos = new ArrayList<IntBuffer>();
+public class Loader {
 
-//     GL3 gl3;
+    private List<Integer> vaos = new ArrayList<Integer>();
+    private List<Integer> vbos = new ArrayList<Integer>();
 
-//     public Loader(GL3 gl3) {
-//         this.gl3 = gl3;
-//     }
+    public RawModel loadToVAO(float[] positions) {
+        int vaoID = createVAO();
+        storeDataInAttributeList(0, positions);
+        unbindVAO();
+        return new RawModel(vaoID, positions.length/3);
+    }
 
-//     public RawModel loadToVAO(float[] positions) {
-//         int vaoID = createVAO();
-//         storeDataInAttributeList(0, positions);
-//         unbindVAO();
-//         return new RawModel(vaoID, positions.length/3);
-//     }
+    private int createVAO() {
+        int vaoID = GL30.glGenVertexArrays();
+        vaos.add(vaoID);
+        GL30.glBindVertexArray(vaoID);
+        return vaoID;
+    }
 
-//     private int createVAO() {
-//         IntBuffer idArr = GLBuffers.newDirectIntBuffer(1);
-//         gl3.glGenVertexArrays(1, idArr);
-//         int vaoID = idArr.get(0);
-//         gl3.glBindVertexArray(vaoID);
-//         vaos.add(idArr);
-//         return vaoID;
-//     }
+    public void cleanUp() {
+        for (int vao : vaos) {
+            GL30.glDeleteVertexArrays(vao);
+        }
 
-//     public void cleanUp() {
-//         for (IntBuffer vao:vaos) {
-//             gl3.glDeleteVertexArrays(1, vao);
-//         }
-//         for (IntBuffer vbo:vbos) {
-//             gl3.glDeleteVertexArrays(1, vbo);
-//         }
-//     }
+        for (int vbo : vbos) {
+            GL15.glDeleteBuffers(vbo);
+        }
+    }
 
-//     private void storeDataInAttributeList(int attributeNumber, float[] data) {
-//         IntBuffer idArr = GLBuffers.newDirectIntBuffer(1);
-//         gl3.glGenBuffers(1, idArr);
-//         vbos.add(idArr);
-//         int vboID = idArr.get(0);
-//         gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, vboID);
-//         FloatBuffer buffer = storeDataInFloatBuffer(data);
-//         gl3.glBufferData(GL3.GL_ARRAY_BUFFER, buffer.capacity() * Buffers.SIZEOF_FLOAT, buffer, GL3.GL_STATIC_DRAW);
-//         gl3.glVertexAttribPointer(attributeNumber, 3, GL3.GL_FLOAT, false, 0, 0);
-//         gl3.glBindBuffer(GL3.GL_ARRAY_BUFFER, 0);
-//     }
+    private void storeDataInAttributeList(int attributeNumber, float[] data) {
+        int vboID = GL15.glGenBuffers();
+        vbos.add(vboID);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+        FloatBuffer buffer = storeDataInFloatBuffer(data);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(attributeNumber, 3, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+    }
 
-//     private FloatBuffer storeDataInFloatBuffer(float[] data) {
-//         FloatBuffer buffer = Buffers.newDirectFloatBuffer(data.length);
-//         buffer.put(data);
-//         buffer.flip();
-//         return buffer;
-//     }
+    private FloatBuffer storeDataInFloatBuffer(float[] data) {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
+        buffer.put(data);
+        buffer.flip();
+        return buffer;
+    }
 
-//     private void unbindVAO() {
-//         gl3.glBindVertexArray(0);
-//     }
+    private void unbindVAO() {
+        GL30.glBindVertexArray(0);
+    }
 
-// }
+}

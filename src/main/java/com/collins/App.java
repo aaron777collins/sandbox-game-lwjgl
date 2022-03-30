@@ -7,6 +7,8 @@ import org.lwjgl.system.*;
 
 import java.nio.*;
 
+import com.collins.display.Loader;
+import com.collins.display.Renderer;
 import com.collins.display.Models.DisplayManager;
 import com.collins.entities.EntityManager;
 import com.collins.entities.Player;
@@ -26,6 +28,8 @@ public class App {
     private float FPS = 60f;
     private boolean RENDER_TIME = false;
     private DisplayManager displayManager;
+	private Loader loader;
+	private Renderer renderer;
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -87,28 +91,31 @@ public class App {
 		// Disable v-sync  (1 to enable)
 		glfwSwapInterval(0);
 
-        displayManager = new DisplayManager(window);
-        EntityManager.init();
-
-        //adding player
-        EntityManager.getEntities().add(new Player(0.2f, 0.2f, 0.2f, 0.2f, 0.05f));
-
 		// Make the window visible
 		glfwShowWindow(window);
-	}
 
-	private void loop() {
-		// This line is critical for LWJGL's interoperation with GLFW's
+				// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
 		// LWJGL detects the context that is current in the current thread,
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
 		GL.createCapabilities();
 
-		// Set the clear color
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        // glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		loader = new Loader();
+		renderer = new Renderer();
 
+        displayManager = new DisplayManager(window, loader, renderer);
+        EntityManager.init();
+
+        //adding player
+        EntityManager.getEntities().add(new Player(0.2f, 0.2f, 0.2f, 0.2f, 0.05f, loader, renderer));
+	}
+
+	private void loop() {
+
+		// Set the clear color
+		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		// glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		// // Run the rendering loop until the user has attempted to close
 		// // the window or has pressed the ESCAPE key.
@@ -158,6 +165,9 @@ public class App {
                 timer += 1000;
             }
         }
+
+		//game loop over
+		loader.cleanUp();
 
 	}
 

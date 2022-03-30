@@ -4,4 +4,5 @@ public interface Entity {
 
     public void update();
     public void draw();
+    public void render();
 }

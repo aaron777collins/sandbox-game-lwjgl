@@ -7,12 +7,14 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
+import com.collins.display.Loader;
+import com.collins.display.Renderer;
 import com.collins.input.InputHandler;
 
 public class Player extends Square{
 
-    public Player(float x, float y, float width, float height, float speed) {
-        super(x, y, width, height, speed);
+    public Player(float x, float y, float width, float height, float speed, Loader loader, Renderer renderer) {
+        super(x, y, width, height, speed, loader, renderer);
         //TODO Auto-generated constructor stub
 
         this.x = x;

@@ -1,29 +1,22 @@
-// package com.collins.display;
+package com.collins.display;
 
-// import com.collins.display.Models.RawModel;
-// import com.jogamp.opengl.GL;
-// import com.jogamp.opengl.GL3;
-// import com.jogamp.opengl.GLAutoDrawable;
-// import com.jogamp.opengl.GLContext;
+import com.collins.display.Models.RawModel;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
-// public class Renderer {
+public class Renderer {
 
-//     GL3 gl3;
+    public void prepare() {
+        GL11.glClearColor(0, 0, 0, 1);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+    }
 
-//     public Renderer(GL3 gl3) {
-//         this.gl3 = gl3;
-//     }
-
-//     public void prepare() {
-//         gl3.glClearColor(1, 0, 0, 1);
-//         gl3.glClear(GL3.GL_COLOR_BUFFER_BIT);
-//     }
-
-//     public void render(RawModel model) {
-//         gl3.glBindVertexArray(model.getVaoID());
-//         gl3.glEnableVertexAttribArray(0);
-//         gl3.glDrawArrays(GL3.GL_TRIANGLES, 0, model.getVertexCount());
-//         gl3.glDisableVertexAttribArray(0);
-//         gl3.glBindVertexArray(0);
-//     }
-// }
+    public void render(RawModel model) {
+        GL30.glBindVertexArray(model.getVaoID());
+        GL20.glEnableVertexAttribArray(0);
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getVertexCount());
+        GL20.glDisableVertexAttribArray(0);
+        GL30.glBindVertexArray(0);
+    }
+}

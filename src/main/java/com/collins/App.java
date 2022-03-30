@@ -1,18 +1,24 @@
 package com.collins;
 
+import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
+import org.lwjgl.openvr.Texture;
 import org.lwjgl.system.*;
 
 import java.nio.*;
 
+import com.collins.display.DisplayManager;
 import com.collins.display.Loader;
 import com.collins.display.Renderer;
-import com.collins.display.Models.DisplayManager;
+import com.collins.display.Models.RawModel;
+import com.collins.display.Models.TexturedModel;
+import com.collins.display.textures.ModelTexture;
 import com.collins.entities.EntityManager;
 import com.collins.entities.Player;
 import com.collins.input.InputHandler;
+import com.collins.shaders.StaticShader;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -30,6 +36,7 @@ public class App {
     private DisplayManager displayManager;
 	private Loader loader;
 	private Renderer renderer;
+	private StaticShader shader;
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -103,12 +110,38 @@ public class App {
 
 		loader = new Loader();
 		renderer = new Renderer();
+		shader = new StaticShader();
 
-        displayManager = new DisplayManager(window, loader, renderer);
+        displayManager = new DisplayManager(window, loader, renderer, shader);
         EntityManager.init();
 
         //adding player
-        EntityManager.getEntities().add(new Player(0.2f, 0.2f, 0.2f, 0.2f, 0.05f, loader, renderer));
+
+		float[] vertices = {
+            //Left bottom triangle
+            -0.5f, 0.5f, 0, //V0
+            -0.5f, -0.5f, 0,//V1
+            0.5f, -0.5f, 0, //V2
+            0.5f, 0.5f, 0   //v3
+        };
+
+        int[] indices = {
+            0, 1, 3, //Top Left triangle (V0, V1, V3)
+            3, 1, 2  //Bottom right triangle (V3, V1, V2)
+        };
+
+        float[] textureCoords = {
+            0, 0, //V0
+            0, 1, //V1
+            1, 1, //V2
+            1, 0  //V3
+        };
+
+        ModelTexture texture = new ModelTexture(loader.loadTexture("coolTexture"));
+        RawModel rawModel = loader.loadToVAO(vertices, textureCoords, indices);
+        TexturedModel texturedModel = new TexturedModel(rawModel, texture);
+
+        EntityManager.getEntities().add(new Player(texturedModel, new Vector3f(-1.0f, 0f, 0.0f), 0f, 0f, 0f, 1f, 0.5f));
 	}
 
 	private void loop() {
@@ -168,6 +201,7 @@ public class App {
 
 		//game loop over
 		loader.cleanUp();
+		shader.cleanUp();
 
 	}
 

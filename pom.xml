@@ -47,6 +47,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.l33tlabs.twl</groupId>
+      <artifactId>pngdecoder</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.lwjgl</groupId>
       <artifactId>lwjgl</artifactId>
     </dependency>
@@ -384,6 +389,16 @@
       <groupId>org.lwjgl</groupId>
       <artifactId>lwjgl-zstd</artifactId>
       <classifier>${lwjgl.natives}</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.joml</groupId>
+      <artifactId>joml</artifactId>
+      <version>1.10.4</version>
+    </dependency>
+    <dependency>
+      <groupId>no.tornado</groupId>
+      <artifactId>tornadofx-android-compat</artifactId>
+      <version>1.0.1</version>
     </dependency>
   </dependencies>
   <build>

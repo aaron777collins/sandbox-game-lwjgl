@@ -1,26 +1,27 @@
-package com.collins.display.Models;
+package com.collins.display;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-import com.collins.display.Loader;
-import com.collins.display.Renderer;
 import com.collins.entities.Entity;
 import com.collins.entities.EntityManager;
 import com.collins.entities.Square;
+import com.collins.shaders.StaticShader;
 
 public class DisplayManager {
 
     private long window;
     private Loader loader;
     private Renderer renderer;
+    private StaticShader shader;
 
-    public DisplayManager(long window, Loader loader, Renderer renderer) {
+    public DisplayManager(long window, Loader loader, Renderer renderer, StaticShader shader) {
         this.window = window;
         this.loader = loader;
         this.renderer = renderer;
+        this.shader = shader;
     }
 
     public void render() {
@@ -31,7 +32,9 @@ public class DisplayManager {
 
         for (Entity entity : EntityManager.getEntities()) {
             // entity.render();
-            entity.render();
+            shader.start();
+            renderer.render(entity, shader);
+            shader.stop();
         }
 
         glfwSwapBuffers(window); // swap the color buffers

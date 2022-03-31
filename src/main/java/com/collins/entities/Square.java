@@ -9,7 +9,7 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import com.collins.display.Loader;
-import com.collins.display.Renderer;
+import com.collins.display.EntityRenderer;
 import com.collins.display.Models.RawModel;
 import com.collins.display.Models.TexturedModel;
 import com.collins.display.textures.ModelTexture;
@@ -18,7 +18,7 @@ import com.collins.shaders.StaticShader;
 
 public class Square extends Entity{
 
-    Renderer renderer;
+    EntityRenderer renderer;
     StaticShader shader;
 
     public Square(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {

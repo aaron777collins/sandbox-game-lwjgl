@@ -9,7 +9,7 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import com.collins.display.Loader;
-import com.collins.display.Renderer;
+import com.collins.display.EntityRenderer;
 import com.collins.display.Models.TexturedModel;
 import com.collins.input.InputHandler;
 import com.collins.shaders.StaticShader;

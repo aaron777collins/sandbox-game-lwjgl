@@ -6,7 +6,8 @@ import java.util.List;
 
 import com.collins.entities.Camera;
 import com.collins.entities.Entity;
-import com.collins.entities.EntityManager;
+import com.collins.entities.ObjectManager;
+import com.collins.terrains.Terrain;
 import com.collins.entities.Light;
 
 public class DisplayManager {
@@ -16,17 +17,21 @@ public class DisplayManager {
     private Light light;
     private MasterRenderer renderer;
     private List<Entity> entities;
+    private List<Terrain> terrains;
 
     public DisplayManager(long window, MasterRenderer renderer, Camera camera, Light light) {
         this.window = window;
         this.camera = camera;
         this.light = light;
         this.renderer = renderer;
-        this.entities = EntityManager.getEntities();
+        this.entities = ObjectManager.getEntities();
+        this.terrains = ObjectManager.getTerrains();
     }
 
     public void render() {
-
+        for (Terrain terrain : terrains) {
+            renderer.processTerrain(terrain);
+        }
         for (Entity entity : entities) {
             renderer.processEntity(entity);
         }

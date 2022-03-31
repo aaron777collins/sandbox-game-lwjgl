@@ -36,10 +36,11 @@ import com.collins.display.Models.TexturedModel;
 import com.collins.display.textures.ModelTexture;
 import com.collins.entities.Camera;
 import com.collins.entities.Entity;
-import com.collins.entities.EntityManager;
+import com.collins.entities.ObjectManager;
 import com.collins.entities.Light;
 import com.collins.entities.Square;
 import com.collins.input.InputHandler;
+import com.collins.terrains.Terrain;
 
 import org.joml.Random;
 import org.joml.Vector3f;
@@ -50,6 +51,31 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import javafx.geometry.Dimension2D;
+
+// NOTES:
+
+        //adding player
+
+		// float[] vertices = {
+        //     //Left bottom triangle
+        //     -0.5f, 0.5f, 0, //V0
+        //     -0.5f, -0.5f, 0,//V1
+        //     0.5f, -0.5f, 0, //V2
+        //     0.5f, 0.5f, 0   //v3
+        // };
+
+        // int[] indices = {
+        //     0, 1, 3, //Top Left triangle (V0, V1, V3)
+        //     3, 1, 2  //Bottom right triangle (V3, V1, V2)
+        // };
+
+        // float[] textureCoords = {
+        //     0, 0, //V0
+        //     0, 1, //V1
+        //     1, 1, //V2
+        //     1, 0  //V3
+        // };
+
 
 public class App {
 
@@ -140,30 +166,13 @@ public class App {
 
 		camera = new Camera();
 		light = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(1,1,1));
-        EntityManager.init();
+        ObjectManager.init();
 		displayManager = new DisplayManager(window, masterRenderer, camera, light);
 
-        //adding player
+		List<Terrain> terrains = ObjectManager.getTerrains();
 
-		// float[] vertices = {
-        //     //Left bottom triangle
-        //     -0.5f, 0.5f, 0, //V0
-        //     -0.5f, -0.5f, 0,//V1
-        //     0.5f, -0.5f, 0, //V2
-        //     0.5f, 0.5f, 0   //v3
-        // };
-
-        // int[] indices = {
-        //     0, 1, 3, //Top Left triangle (V0, V1, V3)
-        //     3, 1, 2  //Bottom right triangle (V3, V1, V2)
-        // };
-
-        // float[] textureCoords = {
-        //     0, 0, //V0
-        //     0, 1, //V1
-        //     1, 1, //V2
-        //     1, 0  //V3
-        // };
+		terrains.add(new Terrain(-1,-1, loader, new ModelTexture(loader.loadTexture("grass"))));
+		terrains.add(new Terrain(0,-1, loader, new ModelTexture(loader.loadTexture("grass"))));
 
 
 		ModelData modelData = OBJFileLoader.loadOBJ("cube2");
@@ -173,7 +182,7 @@ public class App {
 		texture.setShineDamper(10);
 		texture.setReflectivity(1);
 
-        List<Entity> entities = EntityManager.getEntities();
+        List<Entity> entities = ObjectManager.getEntities();
 		Random random = new Random();
 
 		for (int i = 0; i< 200; i++) {
@@ -251,7 +260,7 @@ public class App {
     }
 
     private void update() {
-        EntityManager.update();
+        ObjectManager.update();
 		camera.move();
     }
 

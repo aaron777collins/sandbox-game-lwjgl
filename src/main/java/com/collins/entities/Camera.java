@@ -13,16 +13,22 @@ public class Camera {
 
     public void move() {
         if(InputHandler.UP) {
-            position.z-=0.1f;
+            position.z-=1f;
         }
         if(InputHandler.DOWN) {
-            position.z+=0.1f;
+            position.z+=1f;
         }
         if(InputHandler.RIGHT) {
-            position.x+=0.1f;
+            position.x+=1f;
         }
         if(InputHandler.LEFT) {
-            position.x-=0.1f;
+            position.x-=1f;
+        }
+        if(InputHandler.VERT_UP) {
+            position.y+=1f;
+        }
+        if(InputHandler.VERT_DOWN) {
+            position.y-=1f;
         }
     }
 

@@ -36,11 +36,12 @@ import com.collins.display.Models.TexturedModel;
 import com.collins.display.textures.ModelTexture;
 import com.collins.entities.Camera;
 import com.collins.entities.Entity;
-import com.collins.entities.ObjectManager;
 import com.collins.entities.Light;
+import com.collins.entities.ObjectManager;
 import com.collins.entities.Square;
 import com.collins.input.InputHandler;
 import com.collins.terrains.Terrain;
+import com.collins.toolbox.Dimension2;
 
 import org.joml.Random;
 import org.joml.Vector3f;
@@ -49,8 +50,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-
-import javafx.geometry.Dimension2D;
 
 // NOTES:
 
@@ -272,7 +271,7 @@ public class App {
 		new App().run();
 	}
 
-	public static Dimension2D getWindowSize() {
+	public static Dimension2<Integer> getWindowSize() {
 		try ( MemoryStack stack = stackPush() ) {
 			IntBuffer pWidth = stack.mallocInt(1); // int*
 			IntBuffer pHeight = stack.mallocInt(1); // int*
@@ -280,7 +279,7 @@ public class App {
 			// Get the window size passed to glfwCreateWindow
 			glfwGetWindowSize(window, pWidth, pHeight);
 
-			return new Dimension2D(pWidth.get(0), pHeight.get(0));
+			return new Dimension2<Integer>(pWidth.get(0), pHeight.get(0));
 
 		} catch(Exception e) {
 

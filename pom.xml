@@ -400,9 +400,24 @@
       <artifactId>tornadofx-android-compat</artifactId>
       <version>1.0.1</version>
     </dependency>
+    <dependencies>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>17.0.1</version>
+    </dependency>
+  </dependencies>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.8</version>
+        <configuration>
+            <mainClass>App</mainClass>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

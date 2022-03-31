@@ -13,11 +13,10 @@ import com.collins.entities.Light;
 import com.collins.shaders.StaticShader;
 import com.collins.shaders.TerrainShader;
 import com.collins.terrains.Terrain;
+import com.collins.toolbox.Dimension2;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-
-import javafx.geometry.Dimension2D;
 
 public class MasterRenderer {
 
@@ -72,7 +71,7 @@ public class MasterRenderer {
     }
 
     private void createProjectionMatrix() {
-        Dimension2D windowDimensions = App.getWindowSize();
+        Dimension2<Integer> windowDimensions = App.getWindowSize();
         float aspectRatio = (float) windowDimensions.getWidth() / (float) windowDimensions.getHeight();
         float y_scale = (float) (1f / Math.tan(Math.toRadians(FOV / 2f)) * aspectRatio);
         float x_scale = y_scale / aspectRatio;

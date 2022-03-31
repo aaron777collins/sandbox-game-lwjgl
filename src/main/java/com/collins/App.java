@@ -1,42 +1,68 @@
 package com.collins;
 
-import org.joml.Vector3f;
-import org.lwjgl.*;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.openvr.Texture;
-import org.lwjgl.system.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.nio.*;
+import java.nio.IntBuffer;
+import java.util.List;
 
 import com.collins.display.DisplayManager;
 import com.collins.display.Loader;
-import com.collins.display.Renderer;
+import com.collins.display.MasterRenderer;
+import com.collins.display.ModelData;
+import com.collins.display.OBJFileLoader;
 import com.collins.display.Models.RawModel;
 import com.collins.display.Models.TexturedModel;
 import com.collins.display.textures.ModelTexture;
+import com.collins.entities.Camera;
+import com.collins.entities.Entity;
 import com.collins.entities.EntityManager;
-import com.collins.entities.Player;
+import com.collins.entities.Light;
+import com.collins.entities.Square;
 import com.collins.input.InputHandler;
-import com.collins.shaders.StaticShader;
 
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import org.joml.Random;
+import org.joml.Vector3f;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
+
+import javafx.geometry.Dimension2D;
 
 public class App {
 
 	// The window handle
-	private long window;
+	private static long window;
     private float UPS = 60f;
     private float FPS = 60f;
     private boolean RENDER_TIME = false;
     private DisplayManager displayManager;
 	private Loader loader;
-	private Renderer renderer;
-	private StaticShader shader;
+	private Camera camera;
+	private Light light;
+	private MasterRenderer masterRenderer;
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -109,39 +135,55 @@ public class App {
 		GL.createCapabilities();
 
 		loader = new Loader();
-		renderer = new Renderer();
-		shader = new StaticShader();
 
-        displayManager = new DisplayManager(window, loader, renderer, shader);
+		masterRenderer = new MasterRenderer();
+
+		camera = new Camera();
+		light = new Light(new Vector3f(3000, 2000, 3000), new Vector3f(1,1,1));
         EntityManager.init();
+		displayManager = new DisplayManager(window, masterRenderer, camera, light);
 
         //adding player
 
-		float[] vertices = {
-            //Left bottom triangle
-            -0.5f, 0.5f, 0, //V0
-            -0.5f, -0.5f, 0,//V1
-            0.5f, -0.5f, 0, //V2
-            0.5f, 0.5f, 0   //v3
-        };
+		// float[] vertices = {
+        //     //Left bottom triangle
+        //     -0.5f, 0.5f, 0, //V0
+        //     -0.5f, -0.5f, 0,//V1
+        //     0.5f, -0.5f, 0, //V2
+        //     0.5f, 0.5f, 0   //v3
+        // };
 
-        int[] indices = {
-            0, 1, 3, //Top Left triangle (V0, V1, V3)
-            3, 1, 2  //Bottom right triangle (V3, V1, V2)
-        };
+        // int[] indices = {
+        //     0, 1, 3, //Top Left triangle (V0, V1, V3)
+        //     3, 1, 2  //Bottom right triangle (V3, V1, V2)
+        // };
 
-        float[] textureCoords = {
-            0, 0, //V0
-            0, 1, //V1
-            1, 1, //V2
-            1, 0  //V3
-        };
+        // float[] textureCoords = {
+        //     0, 0, //V0
+        //     0, 1, //V1
+        //     1, 1, //V2
+        //     1, 0  //V3
+        // };
 
-        ModelTexture texture = new ModelTexture(loader.loadTexture("coolTexture"));
-        RawModel rawModel = loader.loadToVAO(vertices, textureCoords, indices);
-        TexturedModel texturedModel = new TexturedModel(rawModel, texture);
 
-        EntityManager.getEntities().add(new Player(texturedModel, new Vector3f(-1.0f, 0f, 0.0f), 0f, 0f, 0f, 1f, 0.5f));
+		ModelData modelData = OBJFileLoader.loadOBJ("cube2");
+        RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getTextureCoords(), modelData.getNormals(), modelData.getIndices());
+        TexturedModel texturedModel = new TexturedModel(rawModel, new ModelTexture(loader.loadTexture("coolTexture")));
+		ModelTexture texture = texturedModel.getTexture();
+		texture.setShineDamper(10);
+		texture.setReflectivity(1);
+
+        List<Entity> entities = EntityManager.getEntities();
+		Random random = new Random();
+
+		for (int i = 0; i< 200; i++) {
+			float x = random.nextFloat() * 100 - 50;
+			float y = random.nextFloat() * 100 - 50;
+			float z = random.nextFloat() * -300;
+			entities.add(new Square(texturedModel, new Vector3f(x, y, z), random.nextFloat()*180f, random.nextFloat()*180f, 0f, 1f));
+
+		}
+
 	}
 
 	private void loop() {
@@ -200,9 +242,8 @@ public class App {
         }
 
 		//game loop over
+		masterRenderer.cleanUp();
 		loader.cleanUp();
-		shader.cleanUp();
-
 	}
 
     private void getInput() {
@@ -211,6 +252,7 @@ public class App {
 
     private void update() {
         EntityManager.update();
+		camera.move();
     }
 
     private void render() {
@@ -219,6 +261,24 @@ public class App {
 
 	public static void main(String[] args) {
 		new App().run();
+	}
+
+	public static Dimension2D getWindowSize() {
+		try ( MemoryStack stack = stackPush() ) {
+			IntBuffer pWidth = stack.mallocInt(1); // int*
+			IntBuffer pHeight = stack.mallocInt(1); // int*
+
+			// Get the window size passed to glfwCreateWindow
+			glfwGetWindowSize(window, pWidth, pHeight);
+
+			return new Dimension2D(pWidth.get(0), pHeight.get(0));
+
+		} catch(Exception e) {
+
+			System.out.println("Error getting window size");
+			System.exit(-1);
+		}
+		return null; //never reaches
 	}
 
 }

@@ -27,6 +27,8 @@ public class Player extends Square{
     @Override
     public void update() {
 
+        //increasePosition(0, 0, -0.1f);
+
         // if(InputHandler.UP) {
         //     y+=speed;
         // }

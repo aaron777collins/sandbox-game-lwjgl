@@ -29,6 +29,6 @@ public class Square extends Entity{
     @Override
     public void update() {
 
-        //no movements
+        increaseRotation(0.5f, 1f, 0);
     }
 }

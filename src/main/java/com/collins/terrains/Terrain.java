@@ -14,7 +14,9 @@ public class Terrain {
     private RawModel model;
     private ModelTexture texture;
 
-    
+    public static float getSize() {
+        return SIZE;
+    }
 
     public float getX() {
         return x;

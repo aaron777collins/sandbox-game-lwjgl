@@ -7,9 +7,9 @@ import org.joml.Vector3f;
 public class Camera {
     
     private Vector3f position = new Vector3f(0, 0, 0);
-    private float pitch; //high low
-    private float yaw; //left right
-    private float roll; //twist
+    private float pitch = 0; //high low
+    private float yaw = 0; //left right
+    private float roll = 0; //twist
 
     public void move() {
         if(InputHandler.UP) {
@@ -29,6 +29,18 @@ public class Camera {
         }
         if(InputHandler.VERT_DOWN) {
             position.y-=1f;
+        }
+        if(InputHandler.CAM_UP) {
+            pitch-=1f;
+        }
+        if(InputHandler.CAM_DOWN) {
+            pitch+=1f;
+        }
+        if(InputHandler.CAM_RIGHT) {
+            yaw+=1f;
+        }
+        if(InputHandler.CAM_LEFT) {
+            yaw-=1f;
         }
     }
 

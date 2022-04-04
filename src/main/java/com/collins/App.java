@@ -39,8 +39,10 @@ import com.collins.entities.Entity;
 import com.collins.entities.Grass;
 import com.collins.entities.Light;
 import com.collins.entities.ObjectManager;
+import com.collins.entities.Tree;
 import com.collins.input.InputHandler;
 import com.collins.terrains.Terrain;
+import com.collins.terrains.TerrainGenerator;
 import com.collins.toolbox.Dimension2;
 
 import org.joml.Random;
@@ -168,37 +170,7 @@ public class App {
         ObjectManager.init();
 		displayManager = new DisplayManager(window, masterRenderer, camera, light);
 
-		List<Terrain> terrains = ObjectManager.getTerrains();
-
-		ModelTexture terrainTexture = new ModelTexture(loader.loadTexture("grass"));
-		terrainTexture.setShineDamper(10);
-		terrainTexture.setReflectivity(1f);
-
-		terrains.add(new Terrain(-1,-1, loader, terrainTexture));
-		terrains.add(new Terrain(0,-1, loader, terrainTexture));
-		terrains.add(new Terrain(0,0, loader, terrainTexture));
-		terrains.add(new Terrain(-1,0, loader, terrainTexture));
-
-		ModelData modelData = OBJFileLoader.loadOBJ("plant");
-        RawModel rawModel = loader.loadToVAO(modelData.getVertices(), modelData.getTextureCoords(), modelData.getNormals(), modelData.getIndices());
-        TexturedModel grass = new TexturedModel(rawModel, new ModelTexture(loader.loadTexture("tallgrass")));
-		ModelTexture grassTexture = grass.getTexture();
-		grassTexture.setShineDamper(10);
-		grassTexture.setReflectivity(1f);
-		grassTexture.setHasTransparency(true);
-		grassTexture.setUseFakeLighting(true);
-
-
-        List<Entity> entities = ObjectManager.getEntities();
-		Random random = new Random();
-
-		for (int i = 0; i< 1500; i++) {
-			float x = random.nextFloat() * Terrain.getSize() * (random.nextFloat() - 0.5f)*2;
-			float y = 0;//random.nextFloat() * 5;
-			float z = random.nextFloat() * Terrain.getSize() * (random.nextFloat() - 0.5f)*2;
-			float ry = random.nextFloat()*180f;
-			entities.add(new Grass(grass, new Vector3f(x, y, z), 0, ry, 0f, 1f));
-		}
+		TerrainGenerator.generateTerrain(loader);
 
 	}
 
